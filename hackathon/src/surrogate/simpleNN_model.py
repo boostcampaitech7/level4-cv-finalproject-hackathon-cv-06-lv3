@@ -7,17 +7,34 @@ class simpleNN_model(torch.nn.Module):
         super(simpleNN_model,self).__init__()
         self.fc1 = torch.nn.Linear(input_size,16)
         self.fc2 = torch.nn.Linear(16,32)
-        self.fc3 = torch.nn.Linear(32,output_size)
-
+        self.fc3 = torch.nn.Linear(32,64)
+        self.fc4 = torch.nn.Linear(64,output_size)
+        # self.fc5 = torch.nn.Linear(128,output_size)
+        # self.dropout = torch.nn.Dropout(0.5)
     def forward(self,x):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
-        x = self.fc3(x)
+        # x = self.dropout(x)
+        x = torch.relu(self.fc3(x))
+        # x = self.dropout(x)
+        # x = torch.relu(self.fc4(x))
+        x = self.fc4(x)
+        # x = torch.relu(x)
+        # x = self.fc5(x)
         return x
     def to(self, *args, **kwargs):
         super().to(*args, **kwargs)
         self.device = next(self.parameters()).device  # device 속성 자동 설정
         return self
+
+def smoothness_loss(model, x):
+    x.requires_grad = True  # x에 대한 gradient 계산 허용
+    y_hat = model(x)
+    y_hat_mean = y_hat.mean()
+    grad = torch.autograd.grad(y_hat_mean, x, create_graph=True)[0]  # (batch_size, input_dim)
+    grad_norm2 = (grad ** 2).sum(dim=1).mean()
+    
+    return grad_norm2
 
 
 def simpleNN_train(train_loader,val_loader):
@@ -36,7 +53,9 @@ def simpleNN_train(train_loader,val_loader):
             data = data.to(model.device)
             target = target.to(model.device)
             output = model(data)
-            loss = loss_fn(output, target)
+            # print(output.shape)
+            # print(target.shape)
+            loss = loss_fn(output, target) #+ 0.5*smoothness_loss(model, data)
             loss.backward()
             optimizer.step()
             train_loss += loss.item()

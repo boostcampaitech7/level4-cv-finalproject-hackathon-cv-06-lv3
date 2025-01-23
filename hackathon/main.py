@@ -92,7 +92,7 @@ if __name__ == "__main__":
     arg('--data_path', '--data_path', '-data_path', type=str, default='./data/concrete_processed.csv',
         help='데이터셋 CSV 파일 경로를 지정합니다')
     arg('--model', '--model', '-model', type=str, default='lightgbm',
-        choices=['lightgbm'], help='사용할 모델을 지정합니다 (기본값: lightgbm)')
+        choices=['lightgbm','simpleNN'], help='사용할 모델을 지정합니다 (기본값: lightgbm)')
     arg('--search_model', '--search_model', '-search_model', type=str, default='backprob',
         choices=['backprob'], help='사용할 검색/최적화 방법을 지정합니다 (기본값: backprob)')
     arg('--seed', '--seed', '-seed', type=int, default=42,

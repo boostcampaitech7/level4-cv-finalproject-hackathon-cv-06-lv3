@@ -6,7 +6,10 @@ import numpy as np
 class SimpleNN_dataloader(torch.utils.data.Dataset):
 
     def __init__(self,X,y):
-        self.X = X
+        # print(X.shape)
+        # print(X)
+        # print(y)
+        self.X = X #.to_numpy()
         self.y = y
 
     def __len__(self):
