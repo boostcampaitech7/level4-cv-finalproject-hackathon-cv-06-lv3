@@ -39,9 +39,9 @@ def main(args, scalers=None):
         user_request_target : 유저 요청 타겟 값 (list) target lenth와 일치
 
     
-        return : 
-            df_result : 유저 요청 타겟 값과 유사도가 높은 샘플을 추출하고, 
-            최적화/검색 수행 후 결과 반환 
+    return : 
+        df_result : 유저 요청 타겟 값과 유사도가 높은 샘플을 추출하고, 
+        최적화/검색 수행 후 결과 반환 
             
     """
     # 로깅 설정
