@@ -10,10 +10,10 @@ def get_objective(X_train, y_train, X_test, y_test):
     Optuna 최적화에 사용될 목적 함수를 반환하는 함수
 
     Args:
-        X_train: 훈련 데이터의 특성 행렬
-        y_train: 훈련 데이터의 타겟 값
-        X_test: 테스트 데이터의 특성 행렬
-        y_test: 테스트 데이터의 타겟 값
+        X_train: 훈련 데이터 행렬
+        y_train: 훈련 데이터 레이블
+        X_test: 테스트 데이터 행렬
+        y_test: 테스트 데이터 레이블
 
     Returns:
         objective (function): Optuna의 목적 함수

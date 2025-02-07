@@ -145,11 +145,13 @@ def k_means_search_deploy(model, pred_func, X_train, X_test, y_test,\
 
             fit_res = []
             # target 변수 평가
-            fit_res.append((-(y_pred - user_request_target.reshape(1,-1))**2))
+            target_fit = -(y_pred - user_request_target.reshape(1,-1))**2
+            fit_res.append(target_fit)
 
             # 중요도 고려 최적화 변수 평가 (minimize, maximize)
             for i in sorted_pop_idx_by_importance:
-                    fit_res.append(population[:,i:i+1])
+                    imp_fit = population[:,i:i+1]
+                    fit_res.append(imp_fit)
 
             fit_res = np.concatenate(fit_res, axis=1)
             fit_res = vectorized_round(fit_res, rounding_digits)

@@ -15,12 +15,35 @@ import pandas as pd
 # from src.surrogate.eval_surrogate_model import eval_surrogate_model
 
 def find_top_k_similar_with_user_request(y_user_request, X_train, y_train, k=50):
+    """
+    유저 요청 타겟 값과 유사도가 높은 샘플을 추출 
+    """
     # euclidean distance
     distances = np.linalg.norm(y_train - y_user_request.reshape(1,-1), axis=1)
     top_k_indices = np.argsort(distances)[:k]
     return X_train[top_k_indices], y_train[top_k_indices]
 
 def main(args, scalers=None):
+    """
+    args : 
+        model : 사용할 surrogate 모델 명
+        search_model : 사용할 서치 모델 명
+        data_path : 데이터셋 경로 (csv)
+        controll_name : 제어 변수 이름 (list) 
+        controll_range : 제어 변수 범위 (dict) key가 control_name과 일치 
+        target : 타겟 변수 이름 (list)
+        importance : 피쳐 별 중요도 (dict) key in control_name 
+        optimize : 피쳐 별 최적화 방향 (dict) minimize, maximize imporance와 key 일치 
+        prj_id : 프로젝트 아이디 (int)
+        seed : 랜덤 시드 (int)
+        user_request_target : 유저 요청 타겟 값 (list) target lenth와 일치
+
+    
+        return : 
+            df_result : 유저 요청 타겟 값과 유사도가 높은 샘플을 추출하고, 
+            최적화/검색 수행 후 결과 반환 
+            
+    """
     # 로깅 설정
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     
