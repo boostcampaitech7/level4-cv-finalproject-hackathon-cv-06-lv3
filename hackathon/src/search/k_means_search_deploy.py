@@ -10,155 +10,11 @@ import contextlib
 import os
 import pandas as pd
 
+from src.search.ga_func import cx_simulated_binary_w_cx_uniform,\
+                    mutGaussian_mutUniformInt,\
+                    k_means_selection,\
+                    lexicographic_selection 
 
-def cx_simulated_binary_w_cx_uniform(ind1, ind2, eta, indpb, is_nominal):
-    """
-    eta : cx_simulated_binary 파라미터
-    indpb : 변수별 변이 확률
-    is_nominal : 변수가 범주형인지 여부
-    """
-    is_nominal = np.array(is_nominal, dtype=bool)
-
-    rand_uniform = np.random.random(len(ind1))
-    rand_pb = np.random.random(len(ind1))
-
-    # nominal 값
-    mask_nominal = (is_nominal & (rand_pb < indpb))
-    ind1[mask_nominal], ind2[mask_nominal] = ind2[mask_nominal], ind1[mask_nominal]
-
-    # 실수 값
-    mask_real = ~is_nominal
-    rand_real = rand_uniform[mask_real]
-    
-    beta = np.where(
-        rand_real < 0.5,
-        (2. * rand_real) ** (1. / (eta + 1.)),
-        (1. / (2. * (1. - rand_real))) ** (1. / (eta + 1.))
-    )
-    
-    
-    ind1_real = ind1[mask_real]
-    ind2_real = ind2[mask_real]
-    ind1[mask_real] = 0.5 * ((1 + beta) * ind1_real + (1 - beta) * ind2_real)
-    ind2[mask_real] = 0.5 * ((1 - beta) * ind1_real + (1 + beta) * ind2_real)
-
-    return ind1, ind2
-
-
-
-# def mutGaussian_mutUniformInt(ind, mu, sigma, indpb, is_nominal):
-#     """
-#     is_nominal : 변수가 범주형인지 여부
-#     mu : 변수 평균 if 변수가 연속형 else 변수 최솟값
-#     sigma : 변수 표준편차 if 변수가 연속형 else 변수 최댓값
-#     """
-#     is_nominal = np.array(is_nominal, dtype=bool)
-
-#     for i in range(len(ind)):
-#         if is_nominal[i]:
-#             if random.random() < indpb:
-#                 ind[i] = random.randint(mu[i], sigma[i])
-#         else:
-#             if random.random() < indpb:
-#                 ind[i] = random.gauss(mu[i], sigma[i])
-#     return ind
-#     pass 
-#     for i, xl, xu in zip(range(size), low, up):
-#         if random.random() < indpb:
-#             individual[i] = random.randint(xl, xu)
-
-#     return individual,
-def mutGaussian_mutUniformInt(ind, mu, sigma, indpb, is_nominal):
-    """
-    is_nominal : 변수가 범주형인지 여부
-    mu : 변수 평균 if 변수가 연속형 else 변수 최솟값
-    sigma : 변수 표준편차 if 변수가 연속형 else 변수 최댓값
-    """
-
-    is_nominal = np.array(is_nominal, dtype=bool)
-
-    mask = np.random.rand(len(ind)) < indpb
-
-    cat_indices = np.where(is_nominal & mask)[0] # 범주 + 변이
-    ind[cat_indices] = np.random.randint(mu[cat_indices], sigma[cat_indices] + 1)
-
-    cont_indices = np.where(~is_nominal & mask)[0]
-    ind[cont_indices] += np.random.normal(mu[cont_indices], sigma[cont_indices])
-
-    return ind,
-
-
-def lexicographic_selection(population,k):
-    """
-    개체의 fitness를 내림차순 정렬한 후 상위 k개를 선택합니다.
-    
-    Args:
-        population (list): 평가된 개체 리스트.
-        k (int): 선택할 개체 수.
-    
-    Returns:
-        population (list): 선택된 개체 리스트 
-    """
-
-    # population.sort(key=lambda ind: tuple(ind.fitness.values[0],)+tuple(ind.fitness.values[i] for i in importance.values()), reverse=True)
-    # population.sort(
-    #     key=lambda ind: tuple(ind.fitness.values[i] * ind.fitness.weights[i] for i in range(len(ind.fitness.values))),
-    #     reverse=True
-    # )
-    population.sort(key=lambda ind: tuple(val * w for val, w in zip(ind.fitness.values, ind.fitness.weights)), 
-                    reverse=True)
-
-    return population[:k] 
-
-def kmeans_clustering(population, k):
-    n, d = population.shape
-    kmeans = faiss.Kmeans(d, k, niter=20, verbose=False)
-    population = population.astype('float32')
-    kmeans.train(population)
-
-    cluster_labels = kmeans.index.search(population, 1)[1].flatten()  
-    # centroids = kmeans.centroids
-    
-    return cluster_labels, kmeans.centroids
-
-def k_means_selection(population, k):
-    """
-    Args:
-        population (list)
-        k (int): K-means에서 나눌 클러스터 개수.
-
-    Returns:
-        list: 선택된 ind 리스트.
-    """
-    # print('population len : ',len(population))
-    adjustment_flag = False  # 클러스터 크기가 홀수일 때 조절하는 플래그
-    population_array = np.array(population)
-    
-    cluster_labels, _ = kmeans_clustering(population_array, k=k)
-    
-    selected = []
-    
-    for cluster_id in range(k):
-        cluster_indices = np.where(cluster_labels == cluster_id)[0]
-        cluster_population = [population[idx] for idx in cluster_indices]
-        cluster_size = len(cluster_population)
-        
-        # 홀수일 떄 개체수 줄어듦 방지 
-        selection_size = cluster_size // 2
-        if cluster_size % 2 == 1 and not adjustment_flag:
-            selection_size += 1
-            adjustment_flag = True
-        elif cluster_size % 2 == 1 and adjustment_flag:
-            adjustment_flag = False
-        
-        selected.extend(
-            lexicographic_selection(
-                cluster_population, 
-                k=selection_size
-              )
-        )
-    # print(len(selected))
-    return selected
 
 def k_means_search_deploy(model, pred_func, X_train, X_test, y_test,\
                           all_var_names, control_var_names, optmize_dict, importance,\
@@ -173,44 +29,51 @@ def k_means_search_deploy(model, pred_func, X_train, X_test, y_test,\
 
     # bounds 
     """
+
+    # nominal 변수 여부 결정 
     is_norminal = [False]*len(control_var_names)
     for i, key in enumerate(control_var_names):
         if type(scalers[key]).__name__ == 'LabelEncoder':
             is_norminal[i] = True
     print("is_norminal",is_norminal)
 
-    # 제어 변수 인덱스 결정 및 중요도 순 정렬
-
+    # 제어 변수 인덱스 찾기 
     control_set = set(control_var_names)  
     control_index = [i for i, v in enumerate(all_var_names) if v in control_set] # var 중에 control
     
     # pop idx : control variable만 0부터 재정렬한 idx 
     control_index_to_pop_idx = {v: i for i, v in enumerate(control_index)}
     
-    # control중 importance 순서    
+    # control idx 기준 importance 순서로 정렬     
     sorted_control_index_by_importance = sorted([i for i in control_index if all_var_names[i] in importance.keys()], key=lambda x: importance[all_var_names[x]])
-    # poppulation 열 index를 중요도 순서로 정렬 
+    
+    # poppulation index 기준 importance 순서로 정렬 
     sorted_pop_idx_by_importance = [control_index_to_pop_idx[i] for i in sorted_control_index_by_importance] 
-    # optimize를 importance 순서로 정렬 
-    # sorted_optimize_dict_by_vars_idx = {all_var_names[k]: optmize_dict[all_var_names[k]] for k in [i for i in control_index if all_var_names[i] in importance.keys()]}
+    
+    # optimize (minimize, maximize)를 importance 순서로 정렬 
     sorted_optimize_dict_by_importance = {all_var_names[k]: optmize_dict[all_var_names[k]] for k in sorted_control_index_by_importance}
-
 
     # population 변수 인덱스와 optimize 매핑  
     pop_index_to_optimize = {control_index_to_pop_idx[i]: optmize_dict[all_var_names[i]] for i in sorted_control_index_by_importance}
-    # print('control_index_to_optimize',control_index_to_optimize)
-    print('pop_index_to_optimize',pop_index_to_optimize)
+
+    # round 처리 이유 : sorting으로 중요도를 고려하기 때문에,
+    #                  중요도 높은 변수의 비교를 완화하여여 
+    #                  중요도 낮은 변수를 고려하기 위해
+    #                  
+    # 연속형 변수 소수점 자리 결정 
     scale_factor_x = np.std(X_train, axis=0)
     rounding_digits_x = np.clip(np.ceil(-np.log10(scale_factor_x/100)), 2, 10).astype(int)[sorted_control_index_by_importance]
     
+    # target 변수 소수점 자리 결정 
     scale_factor_y = np.std(y_test, axis=0)
     rounding_digits_y = np.clip(np.ceil(-np.log10(scale_factor_y/100)), 2, 10).astype(int)
 
+    # 소수점 자리 결정 
     rounding_digits = np.concatenate([rounding_digits_y,rounding_digits_x], axis=0)
 
     vectorized_round = np.vectorize(round)
 
-    #TODO bounds 적용 
+    # bounds 적용 
     if bounds:
         x_min = np.array([value[0] for key, value in bounds.items()]).reshape(-1)
         x_max = np.array([value[1] for key, value in bounds.items()]).reshape(-1)
@@ -220,6 +83,8 @@ def k_means_search_deploy(model, pred_func, X_train, X_test, y_test,\
     print("x_min : ",x_min)
     print("x_max : ",x_max)
     n_features = X_train.shape[1]
+
+    #  minimize, maximize를 고려한 weight 생성 
     weights =  (1.0,) * y_test.shape[-1]
     weights += tuple(1.0 if opt == 'maximize' else -1.0 for opt in sorted_optimize_dict_by_importance.values())
     print('weights',weights)
@@ -232,6 +97,10 @@ def k_means_search_deploy(model, pred_func, X_train, X_test, y_test,\
     #     std_dev = (x_max - x_min) / 6  # 99.7% 확률로 x_min과 x_max 사이에 생성 std 3! 
     #     return np.random.randn(n_features) * std_dev + mean
 
+    # 개체 생성
+    # 범주형 변수 여부 고려
+    # 최적화 변수 고려
+    # 초기값 생성 
     def generate_individual(is_nominal,pop_index_to_optimize):
         is_nominal = np.array(is_nominal, dtype=bool)
 
@@ -251,62 +120,62 @@ def k_means_search_deploy(model, pred_func, X_train, X_test, y_test,\
             individual[i] = np.clip(individual[i], x_min[i], x_max[i])
 
         return individual
-        # return np.random.uniform(x_min[control_index], x_max[control_index])
-        # return np.random.uniform(x_min, x_max)
 
-
-
+    # 개체 생성 
     toolbox = base.Toolbox()
     toolbox.register('attr_float', generate_individual, is_nominal=is_norminal, pop_index_to_optimize=pop_index_to_optimize)
     # min_max 차원이 8개이기에 n을 1로 설정 하면 8개의 변수를 가진 ind 생성!
     toolbox.register('individual', tools.initIterate, creator.Individual, toolbox.attr_float)
     toolbox.register('population', tools.initRepeat, list, toolbox.individual)
 
-    # res = {"pred_x":[]} # , "test_x":[], "test_y":[]}
+    # 결과 저장 Dict  
     res = {}
     for control_var in control_var_names:
         res[f"pred_x_{control_var}"] = []
+
     for idx, (gt_x, gt_y) in tqdm(enumerate(zip(X_test, y_test))):
 
+        # 개체 평가 
         def fitness(population):
-            
+
             population = np.array(population)
             input_data = np.array(gt_x).reshape(1,-1).repeat(len(population), axis=0)
             input_data[:,control_index] = population
             y_pred = pred_func(model=model, X_test=input_data)
 
             fit_res = []
-            # print(user_request_target)
-            # fit_res.append(-(y_pred - gt_y)**2)
-            # print(-(y_pred - user_request_target)**2)
-            # print(y_pred)
+            # target 변수 평가
             fit_res.append((-(y_pred - user_request_target.reshape(1,-1))**2))
 
+            # 중요도 고려 최적화 변수 평가 (minimize, maximize)
             for i in sorted_pop_idx_by_importance:
                     fit_res.append(population[:,i:i+1])
+
             fit_res = np.concatenate(fit_res, axis=1)
             fit_res = vectorized_round(fit_res, rounding_digits)
             return fit_res
 
         toolbox.register('evaluate', fitness)
         
+
         INDPB = 0.2 # 변수별 변이 확률
         cxpb = 0.5 # 교차 확률
         mutpb = 0.5 # 돌연변이 확률
         
-
+        # 선택 방법, 사용하지 않음  
         toolbox.register('select', tools.selTournament)
 
-        #TODO 생성시 minmax 고려 
+        # 개체 생성 
         population = toolbox.population(n=1000)
-        # print(population[0].shape)
+
         ETA_CX = 2.0
         sigma_list = [(ub - lb)/(6.0) for (lb,ub) in zip(x_min, x_max)]
-        # toolbox.register('mate', tools.cxSimulatedBinary, eta=ETA_CX)
-        # toolbox.register('mutate', tools.mutGaussian, mu=[0.0]*(len(x_min)), sigma=sigma_list, indpb=INDPB)
+
+        # 교차 방법 
         toolbox.register('mate', cx_simulated_binary_w_cx_uniform\
                          , eta=ETA_CX, indpb=INDPB, is_nominal=is_norminal)
         
+        # 돌연변이 방법 
         mu = [0.0]*(len(x_min))
         for i in range(len(is_norminal)):
             if is_norminal[i]:
@@ -317,52 +186,32 @@ def k_means_search_deploy(model, pred_func, X_train, X_test, y_test,\
         toolbox.register('mutate', mutGaussian_mutUniformInt, mu=mu, sigma=sigma_list,\
                           indpb=INDPB, is_nominal=is_norminal)
 
+        # 유전 알고리즘 세대 반복 
         for gen in range(1,3):    
-
+            # Crossover, Mutation 
             offspring = algorithms.varAnd(population, toolbox, cxpb, mutpb)
 
+            # 범위 제한 
             offspring = [creator.Individual(np.clip(np.array(ind), x_min, x_max)) for ind in offspring]
             population = offspring+population
 
+            # 평가 
             invalid_ind = [ind for ind in population if not ind.fitness.valid]
             fitness_scores = toolbox.evaluate(invalid_ind)
             for ind, fit in zip(invalid_ind, fitness_scores):
                 ind.fitness.values = tuple(fit)
-            population = k_means_selection(population, k=len(population)//3)
-            # print(len(population))
-            # for ind in population:
-            #     print(ind)
-            #     print(ind.fitness.values)
 
-        # population = [ind for ind in population if ind.fitness.values[0] > -0.01]
-        # if idx == 0:
-        #     df = pd.DataFrame(population)
-        #     df['fitness'] = np.array([ind.fitness.values[0] for ind in population])
-        #     df.to_csv(f'k_means_search_{idx}.csv')
-        population = tools.selBest(population, k=1)
-        # gt_x = X_test[idx]
-        # print(population[0])
-        # expanded_gt_x = np.tile(gt_x, (len(population), 1))
-        # differences = population - expanded_gt_x
-        # distances = np.linalg.norm(differences, axis=1)
-        # res_idx = np.argmin(distances)
-        # x_pred = population[res_idx]
-        # for i in range(len(control_index)):
-        #     if is_norminal[i]:
-        #         res[f"pred_x_{control_var_names[i]}"].append(np.array(population[0][i], dtype=int))
-        #     else:
-        #         res[f"pred_x_{control_var_names[i]}"].append(np.array(population[0][i], dtype=float))
+            population = k_means_selection(population, k=len(population)//3)
+
+        # 중요도, 최적화 변수 고려 선택 
+        population = lexicographic_selection(population, k=1)
+
+        # 결과 저장 
         for i in range(len(control_index)):
             if is_norminal[i]:
                 res[f"pred_x_{control_var_names[i]}"].append(int(population[0][i]))
             else:
                 res[f"pred_x_{control_var_names[i]}"].append(float(population[0][i]))
-
-        # res["pred_y"].append(population[0].fitness.values[0].reshape(-1))
-        # res["test_x"].append(gt_x)
-        # res["test_y"].append(gt_y.reshape(-1,1))
-
-
     
     
     return pd.DataFrame(res)
