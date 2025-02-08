@@ -75,8 +75,11 @@ def main(args, scalers=None):
     else:
         raise ValueError("scalers is not provided")
 
-    X_test, y_test = find_top_k_similar_with_user_request(
-        y_user_request, X_train, y_train, k=5)
+    if args.user_request_idx == -1:
+        X_test, y_test = find_top_k_similar_with_user_request(
+            y_user_request, X_train, y_train, k=5)
+    else:
+        X_test, y_test = X_train[args.user_request_idx:args.user_request_idx+1], y_train[args.user_request_idx:args.user_request_idx+1]
 
     def inverse_transform(df):  # , col_names):
         """
@@ -247,6 +250,8 @@ if __name__ == "__main__":
     arg('--user_request_target', '--user_request_target', '-user_request_target', type=list, default=[0.0],
         help='사용자 요청 타겟 값을 지정합니다')
     arg('--model_path', '--model_path', '-model_path', type=str, default='./model/catboost.pkl'),
+    arg('--user_request_idx', '--user_request_idx', '-user_request_idx', type=int, default=-1,
+        help='사용자 요청 데이터 인덱스를 지정합니다')
     args = parser.parse_args()
 
     main(args)
