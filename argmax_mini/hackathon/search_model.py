@@ -81,6 +81,21 @@ def main(args, scalers=None):
     else:
         X_test, y_test = X_train[args.user_request_idx:args.user_request_idx+1], y_train[args.user_request_idx:args.user_request_idx+1]
 
+    
+
+    if args.user_request_value is not None:
+        user_request_value_scaled = {}
+        for key, value in args.user_request_value.items():
+            if key in scalers:
+                user_request_value_scaled[key] = scalers[key].transform(np.array([value]).reshape(-1,1)).flatten()
+            else:
+                user_request_value_scaled[key] = value
+
+        user_request_value_scaled = pd.DataFrame(user_request_value_scaled)
+        X_test = user_request_value_scaled.drop(columns=args.target).to_numpy()
+        y_test = user_request_value_scaled[args.target].to_numpy()
+
+
     def inverse_transform(df):  # , col_names):
         """
         df : scaled col이 있는 df 
@@ -252,6 +267,9 @@ if __name__ == "__main__":
     arg('--model_path', '--model_path', '-model_path', type=str, default='./model/catboost.pkl'),
     arg('--user_request_idx', '--user_request_idx', '-user_request_idx', type=int, default=-1,
         help='사용자 요청 데이터 인덱스를 지정합니다')
+    arg('--user_request_value', '--user_request_value', '-user_request_value', type=dict, default=None,
+        help='사용자 요청 데이터 값을 지정합니다')
+
     args = parser.parse_args()
 
     main(args)
