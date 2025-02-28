@@ -2,7 +2,7 @@
 
 import os
 import numpy as np
-import pandas as pd
+import fireducks.pandas as pd
 import lightgbm as lgb
 from joblib import load
 from bayes_opt import BayesianOptimization

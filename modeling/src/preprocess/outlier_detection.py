@@ -1,6 +1,6 @@
 # src/preprocess/outlier_detection.py
 
-import pandas as pd
+import fireducks.pandas as pd
 
 def remove_outliers_iqr(df: pd.DataFrame, numerical_cols: list, factor: float = 1.5) -> pd.DataFrame:
     """

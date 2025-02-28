@@ -1,7 +1,7 @@
 # src/preprocess/analyze_distribution.py
 
 from scipy.stats import shapiro
-import pandas as pd
+import fireducks.pandas as pd
 
 def analyze_distribution(df: pd.DataFrame, numerical_cols: list) -> dict:
     """

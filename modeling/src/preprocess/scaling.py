@@ -1,6 +1,6 @@
 # src/preprocess/scaling.py
 
-import pandas as pd
+import fireducks.pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 
 def scale_data(df: pd.DataFrame, numerical_cols: list, method: str = 'standard'):

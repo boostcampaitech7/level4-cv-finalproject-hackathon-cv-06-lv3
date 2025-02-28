@@ -4,7 +4,7 @@ import argparse
 from time import time
 
 import numpy as np
-# import pandas as pd
+# import fireducks.pandas as pd
 import fireducks.pandas as pd
 from django.core.files.base import ContentFile
 

@@ -1,4 +1,4 @@
-import pandas as pd
+import fireducks.pandas as pd
 from hackathon.src.preprocess.sampling import sample_dataframe
 from hackathon.src.preprocess.datetime_features import remove_datetime_columns
 from hackathon.src.preprocess.detect_features import detect_features

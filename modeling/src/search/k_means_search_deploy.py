@@ -8,7 +8,7 @@ from deap import algorithms
 from tqdm import tqdm
 import contextlib
 import os
-import pandas as pd
+import fireducks.pandas as pd
 
 from src.search.ga_func import cx_simulated_binary_w_cx_uniform,\
                     mutGaussian_mutUniformInt,\

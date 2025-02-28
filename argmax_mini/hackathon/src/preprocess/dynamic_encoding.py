@@ -1,4 +1,4 @@
-import pandas as pd
+import fireducks.pandas as pd
 from transformers import BertTokenizer, BertModel
 from hackathon.src.preprocess.encoding import label_encode, bert_encode
 

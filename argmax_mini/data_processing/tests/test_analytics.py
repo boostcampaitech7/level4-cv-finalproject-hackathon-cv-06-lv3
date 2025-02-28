@@ -9,7 +9,7 @@ from rest_framework.test import APITestCase
 from rest_framework.response import Response
 
 import numpy as np
-import pandas as pd
+import fireducks.pandas as pd
 
 from data_processing.models import ProjectModel, FlowModel, ConcatColumnModel, ColumnModel, CsvModel, HistogramModel
 from data_processing.serializers import ConcatColumnModelSerializer

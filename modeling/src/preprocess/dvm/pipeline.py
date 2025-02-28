@@ -1,6 +1,6 @@
 # src/preprocess/dvm/pipeline.py
 
-import pandas as pd
+import fireducks.pandas as pd
 from .data_loading import load_data
 from .data_transformation import melt_sales_table, merge_price_sales, aggregate_sales
 from .feature_engineering import calculate_mode, merge_ad_tables, add_annual_revenue

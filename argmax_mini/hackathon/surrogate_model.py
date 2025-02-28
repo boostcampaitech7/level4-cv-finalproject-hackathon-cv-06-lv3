@@ -5,7 +5,7 @@ import logging
 import time
 import os
 
-import pandas as pd
+import fireducks.pandas as pd
 import numpy as np
 
 import hackathon.src.datasets as datasets

@@ -1,6 +1,6 @@
 # src/preprocess/dvm/data_loading.py
 
-import pandas as pd
+import fireducks.pandas as pd
 
 def load_data(file_paths):
     """

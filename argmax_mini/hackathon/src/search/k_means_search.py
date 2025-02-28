@@ -8,7 +8,7 @@ from deap import algorithms
 from tqdm import tqdm
 import contextlib
 import os
-import pandas as pd
+import fireducks.pandas as pd
 
 
 def kmeans_clustering(population, k):

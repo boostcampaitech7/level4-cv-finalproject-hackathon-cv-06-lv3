@@ -1,4 +1,4 @@
-import pandas as pd
+import fireducks.pandas as pd
 from src.preprocess.datetime_features import remove_datetime_columns
 from src.preprocess.detect_features import detect_features
 from src.preprocess.dynamic_encoding import dynamic_encode

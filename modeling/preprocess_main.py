@@ -1,5 +1,5 @@
 import sys
-import pandas as pd
+import fireducks.pandas as pd
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

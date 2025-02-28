@@ -36,7 +36,7 @@ search_using_user_request_value.ipynb
 
 import argparse
 import numpy as np
-import pandas as pd
+import fireducks.pandas as pd
 import os
 
 from hackathon import search_model

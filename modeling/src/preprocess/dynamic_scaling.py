@@ -1,6 +1,6 @@
 # src/preprocess/dynamic_scaling.py
 
-import pandas as pd
+import fireducks.pandas as pd
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from src.preprocess.analyze_distribution import analyze_distribution
 

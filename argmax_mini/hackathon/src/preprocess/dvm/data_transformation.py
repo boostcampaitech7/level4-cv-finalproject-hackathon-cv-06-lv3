@@ -1,6 +1,6 @@
 # src/preprocess/dvm/data_transformation.py
 
-import pandas as pd
+import fireducks.pandas as pd
 
 def melt_sales_table(df_sales):
     """

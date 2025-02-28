@@ -2,7 +2,7 @@
 
 from hackathon.src.preprocess.outlier_detection import remove_outliers_iqr, remove_outliers_zscore
 from hackathon.src.preprocess.analyze_distribution import analyze_distribution
-import pandas as pd
+import fireducks.pandas as pd
 
 
 def dynamic_outlier_removal(df: pd.DataFrame, numerical_cols: list, **kwargs) -> pd.DataFrame:

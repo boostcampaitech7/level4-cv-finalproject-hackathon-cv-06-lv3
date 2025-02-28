@@ -10,7 +10,7 @@ import src.search as search
 import src.surrogate as surrogate
 from src.utils import Setting, measure_time
 
-import pandas as pd
+import fireducks.pandas as pd
 import numpy as np
 
 # from src.surrogate.eval_surrogate_model import eval_surrogate_model

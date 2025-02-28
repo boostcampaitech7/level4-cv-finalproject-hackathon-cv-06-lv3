@@ -1,5 +1,5 @@
 # csv_views.py
-# import pandas as pd
+# import fireducks.pandas as pd
 import fireducks.pandas as pd
 # import polars as pl
 

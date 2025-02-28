@@ -1,6 +1,6 @@
 # src/preprocess/encoding.py
 import numpy as np
-import pandas as pd
+import fireducks.pandas as pd
 import torch
 from sklearn.preprocessing import LabelEncoder
 from transformers import BertModel, BertTokenizer

@@ -32,7 +32,7 @@ Surrogate Model 학습과, Surrogate Model을 환경으로 하여 특정 Y값에
 
 import argparse
 import numpy as np
-import pandas as pd
+import fireducks.pandas as pd
 import os
 
 from hackathon import search_model

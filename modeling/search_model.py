@@ -11,7 +11,7 @@ from src.utils import Setting, measure_time
 from src.datasets.data_loader import load_data
 
 import numpy as np
-import pandas as pd
+import fireducks.pandas as pd
 # from src.surrogate.eval_surrogate_model import eval_surrogate_model
 
 def find_top_k_similar_with_user_request(y_user_request, X_train, y_train, k=50):

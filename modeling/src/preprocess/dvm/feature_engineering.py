@@ -1,6 +1,6 @@
 # src/preprocess/dvm/feature_engineering.py
 
-import pandas as pd
+import fireducks.pandas as pd
 
 def calculate_mode(df, group_by_col, target_cols):
     """

@@ -1,6 +1,6 @@
 # src/preprocess/text_processing.py
 
-import pandas as pd
+import fireducks.pandas as pd
 import re
 
 def process_text(df: pd.DataFrame, text_columns: list) -> pd.DataFrame:

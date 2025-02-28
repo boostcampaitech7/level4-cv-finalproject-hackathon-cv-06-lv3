@@ -1,4 +1,4 @@
-import pandas as pd
+import fireducks.pandas as pd
 
 def sample_dataframe(df: pd.DataFrame, sample_size: int = 1_000_000, random_state: int = 42) -> pd.DataFrame:
     """

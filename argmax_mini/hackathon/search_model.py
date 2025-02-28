@@ -5,7 +5,7 @@ import logging
 import time
 
 import numpy as np
-import pandas as pd
+import fireducks.pandas as pd
 import hackathon.src.datasets as datasets
 import hackathon.src.search as search
 import hackathon.src.surrogate as surrogate

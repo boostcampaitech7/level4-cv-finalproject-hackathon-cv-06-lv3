@@ -1,6 +1,6 @@
 # src/preprocess/missing_values.py
 
-import pandas as pd
+import fireducks.pandas as pd
 from src.preprocess.processing_metadata import add_removed_columns
 
 def fill_missing_numerical(df: pd.DataFrame, numerical_cols: list, strategy: str = 'median') -> pd.DataFrame:

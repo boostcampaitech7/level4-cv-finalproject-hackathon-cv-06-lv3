@@ -3,7 +3,7 @@ import io
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-import pandas as pd
+import fireducks.pandas as pd
 from data_processing.models import CsvModel, ProjectModel
 
 

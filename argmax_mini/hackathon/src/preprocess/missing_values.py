@@ -1,6 +1,6 @@
 # src/preprocess/missing_values.py
 
-import pandas as pd
+import fireducks.pandas as pd
 from hackathon.src.preprocess.processing_metadata import add_removed_columns
 
 

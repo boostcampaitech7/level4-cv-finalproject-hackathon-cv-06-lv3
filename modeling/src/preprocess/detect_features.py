@@ -1,4 +1,4 @@
-import pandas as pd
+import fireducks.pandas as pd
 import numpy as np
 
 def detect_features(df: pd.DataFrame) -> dict:

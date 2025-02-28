@@ -1,4 +1,4 @@
-import pandas as pd
+import fireducks.pandas as pd
 
 def inverse_transform_control_variables(scaled_values: pd.DataFrame, scalers: dict) -> pd.DataFrame:
     """

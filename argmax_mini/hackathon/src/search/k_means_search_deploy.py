@@ -8,7 +8,7 @@ from deap import algorithms
 from tqdm import tqdm
 import contextlib
 import os
-import pandas as pd
+import fireducks.pandas as pd
 from hackathon.src.search.ga_function import mutGaussian_mutUniformInt\
                                             ,cx_simulated_binary_w_cx_uniform\
                                             ,k_means_selection\

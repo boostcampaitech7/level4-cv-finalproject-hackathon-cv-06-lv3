@@ -1,5 +1,5 @@
 import lightgbm as lgb
-import pandas as pd
+import fireducks.pandas as pd
 from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
 from joblib import dump
 import time

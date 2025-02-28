@@ -1,6 +1,6 @@
 # src/preprocess/dvm/data_saving.py
 
-import pandas as pd
+import fireducks.pandas as pd
 
 def save_final_dataframe(df, output_path):
     """
