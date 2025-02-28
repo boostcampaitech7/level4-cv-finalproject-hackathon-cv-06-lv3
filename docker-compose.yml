@@ -1,0 +1,46 @@
+services:
+  backend:
+    build:
+      context: ./argmax_mini
+      dockerfile: Dockerfile
+    container_name: django_backend
+    volumes:
+      - ./argmax_mini:/app
+    ports:
+      - "8000:8000"
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  frontend:
+    build:
+      context: ./user-interface
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    volumes:
+      - ./user-interface:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_BASE_URL=/api
+    restart: always
+    depends_on:
+      - backend
+
+
+  nginx:
+    image: nginx:1.23-alpine
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+    restart: always
